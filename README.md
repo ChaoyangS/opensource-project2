@@ -1,36 +1,48 @@
-# Contribution [#]: [Issue Title]
+# Contribution 2: Email — Sending emails does not work if the server does not have TLS
 
-**Contribution Number:** [1 / 2 / 3]  
-**Student:** [Your Name]  
-**Issue:** [GitHub issue link]  
-**Status:** [Phase I / Phase II / Phase III / Phase IV] [In Progress / Complete]
+**Contribution Number:** 2  
+**Student:** Chaoyang Shen  
+**Issue:** https://github.com/graphql-hive/console/issues/1561  
+**Status:** Phase I In Progress
+Why I Chose This Issue section:
 
----
 
 ## Why I Chose This Issue
 
-[1-2 paragraphs explaining why this issue interests you, how it matches your skills/learning goals, what you hope to learn]
-
----
+This issue asks GraphQL Hive to add an `ignoreTLS` option to its email provider
+configuration so that emails can be sent through SMTP servers that don't support
+TLS encryption. Right now email delivery silently fails against such servers,
+which blocks anyone self-hosting Hive against a legacy or internal mail relay.
+I chose it because it's labeled a "good first issue" with a clearly scoped fix
+in a single file (`packages/services/emails/src/providers.ts`), making it an
+approachable way to learn the codebase while shipping a change that has real
+value for self-hosted deployments.
 
 ## Understanding the Issue
 
 ### Problem Description
 
-[In your own words, what's broken or missing?]
+GraphQL Hive's email service can't send email through SMTP servers that don't
+support TLS. The provider configuration has no way to disable TLS, so when Hive
+connects to a non-TLS server the connection negotiation fails and no email is
+delivered. The fix requested is to expose an `ignoreTLS` option that gets passed
+through to the underlying SMTP transport.
 
 ### Expected Behavior
 
-[What should happen?]
+When Hive is configured to use an SMTP server without TLS (for example a legacy
+or internal mail relay), setting an `ignoreTLS` flag should let it connect and
+send emails successfully.
 
 ### Current Behavior
 
-[What actually happens?]
+There is no `ignoreTLS` setting. Against a server without TLS, email sending
+fails and messages are never delivered.
 
 ### Affected Components
 
-[Which parts of the codebase are involved?]
-
+- **`packages/services/emails/src/providers.ts`** (around line 85) — the SMTP
+  email provider configuration where the TLS-related transport options are set.
 ---
 
 ## Reproduction Process
